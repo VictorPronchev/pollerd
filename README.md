@@ -11,8 +11,6 @@ Aрхитектурата и основните компоненти на пар
 Използваме epgsql или mysql-otp библиотека.
 
 erlang
-Copy
-Edit
 % snmp_config:fetch_targets/0
 fetch_targets() ->
     % Свързване и извличане на устройства с креденшъли
@@ -24,8 +22,6 @@ fetch_targets() ->
 Използваме snmp модула на Erlang/OTP:
 
 erlang
-Copy
-Edit
 % snmp_poller:poll(Target)
 poll({IP, "2c", Community, _, _, _}) ->
     snmp:open(),
@@ -45,8 +41,6 @@ poll({IP, "3", _, User, AuthPass, PrivPass}) ->
 Използваме erlang:spawn/1 или async чрез task модула.
 
 erlang
-Copy
-Edit
 start_polling() ->
     Targets = snmp_config:fetch_targets(),
     Pids = [spawn(fun() -> Result = snmp_poller:poll(T), snmp_result_store:store(Result) end) || T <- Targets],
@@ -55,16 +49,12 @@ start_polling() ->
 Създава cowboy или elli HTTP сървър, който отговаря на /metrics.
 
 erlang
-Copy
-Edit
 % metrics_handler:handle/2
 handle(Req, State) ->
     Metrics = snmp_result_store:get_all_as_prometheus(),
     cowboy_req:reply(200, #{<<"content-type">> => <<"text/plain">>}, Metrics, Req).
 5. Пример за експортиран Prometheus формат
 bash
-Copy
-Edit
 # HELP snmp_device_uptime_seconds Uptime of device in seconds
 # TYPE snmp_device_uptime_seconds gauge
 snmp_device_uptime_seconds{device="192.168.1.1"} 123456
